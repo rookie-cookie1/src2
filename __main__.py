@@ -1,36 +1,31 @@
 import sys
 import pygame
+from PIL import Image
+import os
 pygame.init()
 
+class gameObject:
+    def __init__(self, image, height, speed):
+        self.speed = speed
+        self.image = image
+        self.pos = image.get_rect().move(0, height)
+    def move(self, up = False, down = False, left = False, right = False):
+        self.pos = self.pos.move(0, self.speed)
 
-
-screenSize = width, height = 1280, 720
-speed = [2, 2]
-black = 0, 0, 0
-
-screen = pygame.display.set_mode(screenSize)
-
-ball = pygame.image.load('loogeyTransparent.png')
-ball2 = pygame.image.load('fabioTransparent.png')
-ballrect = ball.get_rect()
-ballrect2 = ball2.get_rect()
-
-while True:
+screen = pygame.display.set_mode((1280, 720)) #Creates the screen
+clock = pygame.time.Clock()            #get a pygame clock object
+playerImg = pygame.image.load('fabioSprite.png').convert() #opens and converts the image
+background = pygame.image.load('ResizedGameMenu.png').convert() #Opens and converts the image
+screen.blit(background, (0, 0)) #Creates the background
+objects = [] #The object list
+                    #create 10 objects
+player = gameObject(playerImg, 1, 1) #Creates the player object
+while True: #Main game loop
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: sys.exit()
-
-    ballrect = ballrect.move(speed)
-    if ballrect.left < 0 or ballrect.right > width:
-        speed[0] = -speed[0]
-    if ballrect.top < 0 or ballrect.bottom > height:
-        speed[1] = -speed[1]
-    ballrect2 = ballrect2.move(speed)
-    if ballrect2.left < 0 or ballrect2.right > width:
-        speed[0] = -speed[0]
-    if ballrect2.top < 0 or ballrect2.bottom > height:
-        speed[1] = -speed[1]
-    
-
-    screen.fill(black)
-    screen.blit(ball, ballrect)
-    pygame.display.flip()
+        if event.type == pygame.QUIT:
+            sys.exit()
+    screen.blit(background, player.pos, player.pos)
+    player.move()
+    screen.blit(player.image, player.pos)
+    pygame.display.update()
+    clock.tick(60)
