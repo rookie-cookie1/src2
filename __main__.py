@@ -3,15 +3,30 @@ import pygame
 from PIL import Image
 import os
 pygame.init()
-
-class playerObject: #Creates the player 
+WIDTH = 1280
+HEIGHT = 720
+class playerObject: #Creates the player controllable object
     def __init__(self, image, height, speed):
         self.speed = speed
         self.image = image
         self.pos = image.get_rect().move(0, height)
     def move(self, up = False, down = False, left = False, right = False):
-        self.pos = self.pos.move(0, self.speed)
-
+        if right:
+            self.pos.right += self.speed
+        if left:
+            self.pos.right -= self.speed
+        if down:
+            self.pos.top += self.speed
+        if up:
+            self.pos.top -= self.speed
+        if self.pos.right > WIDTH:
+            self.pos.left = 0
+        if self.pos.top > HEIGHT-SPRITE_HEIGHT:
+            self.pos.top = 0
+        if self.pos.right < SPRITE_WIDTH:
+            self.pos.right = WIDTH
+        if self.pos.top < 0:
+            self.pos.top = HEIGHT-SPRITE_HEIGHT
 class gameObjectStatic:
     def __init__(self, color, width, height, posX, posY):
         self.color = color
@@ -26,19 +41,30 @@ class gameObjectStatic:
 
 screen = pygame.display.set_mode((1280, 720)) #Creates the screen
 clock = pygame.time.Clock()                   #get a pygame clock object
-playerImg = pygame.image.load('fabioSprite.png').convert() #opens and converts the image
+playerImgPG = pygame.image.load('fabioSprite.png').convert_alpha() #opens and converts the image
+playerImgPil = Image.open('fabioSprite.png')
+SPRITE_HEIGHT = playerImgPil.height
+SPRITE_WIDTH = playerImgPil.width
 background = pygame.image.load('ResizedGameMenu.png').convert() #Opens and converts the image
 screen.blit(background, (0, 0)) #Creates the background
-objects = []            #
+objects = []            #Object list
 props = []              #The props list
-player = playerObject(playerImg, 0, 5) #Creates the player object
+player = playerObject(playerImgPG, 0, 5) #Creates the player object
 rectangle = gameObjectStatic((3, 3, 3), 40, 60, 50, 50)
 while True: #Main game loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
     screen.blit(background, player.pos, player.pos)
-    player.move()
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_UP]:
+        player.move(up=True)
+    if keys[pygame.K_DOWN]:
+        player.move(down=True)
+    if keys[pygame.K_LEFT]:
+        player.move(left=True)
+    if keys[pygame.K_RIGHT]:
+        player.move(right=True)
     rectangle.draw()
     screen.blit(player.image, player.pos)
     pygame.display.update()
