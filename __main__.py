@@ -27,6 +27,8 @@ class playerObject: #Creates the player controllable object
             self.pos.right = WIDTH
         if self.pos.top < 0:
             self.pos.top = HEIGHT-SPRITE_HEIGHT
+    def animate(self):
+        
 class gameObjectStatic:
     def __init__(self, color, width, height, posX, posY):
         self.color = color
