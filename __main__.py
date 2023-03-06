@@ -5,12 +5,32 @@ import os
 pygame.init()
 WIDTH = 1280
 HEIGHT = 720
+i = 0
 class playerObject: #Creates the player controllable object
     def __init__(self, image, height, speed):
+        global loogeyMeleeAttackList
+        global loogeyWalkingList
         self.speed = speed
         self.image = image
         self.pos = image.get_rect().move(0, height)
-    def move(self, up = False, down = False, left = False, right = False):
+        loogeyMeleeAttackList = []
+        loogeyWalkingList = []
+        loogeyJumpingList = []
+        #These three for loops load the animation frames into the lists
+        for frame in os.scandir('loogeyAnimations/loogeyMeleeAttack'):
+            if frame.is_file():
+                frame = pygame.image.load(frame).convert_alpha()
+                loogeyMeleeAttackList.append(frame)
+        for frame in os.scandir('loogeyAnimations/loogeyWalking'):
+            if frame.is_file():
+                frame = pygame.image.load(frame).convert_alpha()
+                loogeyWalkingList.append(frame)
+        for frame in os.scandir('loogeyAnimations/loogeyWalking'):
+            if frame.is_file():
+                frame = pygame.image.load(frame).convert_alpha()
+                loogeyJumpingList.append(frame)
+        
+    def move(self, up = False, down = False, left = False, right = False, space = False):
         if right:
             self.pos.right += self.speed
         if left:
@@ -19,6 +39,9 @@ class playerObject: #Creates the player controllable object
             self.pos.top += self.speed
         if up:
             self.pos.top -= self.speed
+        if space:
+            print("ATeCk!1!")
+        #Do stuff
         if self.pos.right > WIDTH:
             self.pos.left = 0
         if self.pos.top > HEIGHT-SPRITE_HEIGHT:
@@ -27,7 +50,13 @@ class playerObject: #Creates the player controllable object
             self.pos.right = WIDTH
         if self.pos.top < 0:
             self.pos.top = HEIGHT-SPRITE_HEIGHT
-    def animate(self):
+    def attack(self):
+        global i
+        self.image = loogeyMeleeAttackList[i]
+        i = i + 1
+        print(str(len(loogeyMeleeAttackList)))
+        if i >= len(loogeyMeleeAttackList):
+            i = 0
         
 class gameObjectStatic:
     def __init__(self, color, width, height, posX, posY):
@@ -53,6 +82,7 @@ objects = []            #Object list
 props = []              #The props list
 player = playerObject(playerImgPG, 0, 5) #Creates the player object
 rectangle = gameObjectStatic((3, 3, 3), WIDTH, 60, 0, 660)
+tick = 0
 while True: #Main game loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -67,7 +97,15 @@ while True: #Main game loop
         player.move(left=True)
     if keys[pygame.K_RIGHT]:
         player.move(right=True)
+    if keys[pygame.K_SPACE]:
+        player.move(space=True)
     rectangle.draw()
     screen.blit(player.image, player.pos)
+
+    player.attack()
     pygame.display.update()
     clock.tick(60)
+    tick = tick + 1
+    if tick >= 60:
+        tick = 0
+    print(str(tick))
