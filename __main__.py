@@ -41,8 +41,8 @@ class gameObjectStatic:
 
 screen = pygame.display.set_mode((1280, 720)) #Creates the screen
 clock = pygame.time.Clock()                   #get a pygame clock object
-playerImgPG = pygame.image.load('fabioSprite.png').convert_alpha() #opens and converts the image
-playerImgPil = Image.open('fabioSprite.png')
+playerImgPG = pygame.image.load('loogeySprite.png').convert_alpha() #opens and converts the image
+playerImgPil = Image.open('loogeySprite.png')
 SPRITE_HEIGHT = playerImgPil.height
 SPRITE_WIDTH = playerImgPil.width
 background = pygame.image.load('ResizedGameMenu.png').convert() #Opens and converts the image
@@ -50,7 +50,7 @@ screen.blit(background, (0, 0)) #Creates the background
 objects = []            #Object list
 props = []              #The props list
 player = playerObject(playerImgPG, 0, 5) #Creates the player object
-rectangle = gameObjectStatic((3, 3, 3), 40, 60, 50, 50)
+rectangle = gameObjectStatic((3, 3, 3), WIDTH, 60, 0, 660)
 while True: #Main game loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
