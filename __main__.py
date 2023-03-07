@@ -6,11 +6,14 @@ pygame.init()
 WIDTH = 1280
 HEIGHT = 720
 attack = False
+frameList = []
 class playerObject: #Creates the player controllable object
     def __init__(self, image, height, speed):
         global loogeyMeleeAttackList
         global loogeyWalkingList
         global loogeyJumpingList
+        global finished
+        finished = True
         self.speed = speed
         self.image = image
         self.pos = image.get_rect().move(0, height)
@@ -33,6 +36,7 @@ class playerObject: #Creates the player controllable object
         
     def move(self, up = False, down = False, left = False, right = False, space = False):
         global attack
+        global finished
         if right:
             self.pos.right += self.speed
             player.walk()
@@ -54,16 +58,26 @@ class playerObject: #Creates the player controllable object
             self.pos.right = WIDTH
         if self.pos.top < 0:
             self.pos.top = HEIGHT-SPRITE_HEIGHT
-    def attack(self, frame):
+    def attack(self):
         global tick
+        global finished
         global attack
-        if tick % 3 == 0:
-            if frame <= len(loogeyMeleeAttackList):
-                self.image = loogeyMeleeAttackList[frame]
-                frame = frame + 1
-            else:
-                frame = 0
-                attack = False
+        global frameList
+        if finished == True:
+            frameList[0] = 0
+            frame = frameList[0]
+            print(str(finished))
+            finished = False
+        if frame < len(loogeyMeleeAttackList):    
+            self.image = loogeyMeleeAttackList[frame]
+            frame = frame + 1
+            frameList[0] = frame
+            print(str(frame))
+        else:
+            frame = 0
+            frameList[0] = 0
+            attack = False
+            finished = True
             
         
                 
@@ -115,8 +129,8 @@ player = playerObject(playerImgPG, 0, 5) #Creates the player object
 rectangle = gameObjectStatic((3, 3, 3), WIDTH, 60, 0, 660)
 tick = 0
 while True: #Main game loop
-    if attack:
-        player.attack()
+    if attack == True and tick % 3 == 0:
+        player.attack()  
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
