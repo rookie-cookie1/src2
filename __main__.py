@@ -51,12 +51,14 @@ class playerObject: #Creates the player controllable object
         if self.pos.top < 0:
             self.pos.top = HEIGHT-SPRITE_HEIGHT
     def attack(self):
+        global tick
         global i
-        self.image = loogeyMeleeAttackList[i]
-        i = i + 1
-        print(str(len(loogeyMeleeAttackList)))
-        if i >= len(loogeyMeleeAttackList):
-            i = 0
+        if tick % 3 == 0:
+            self.image = loogeyMeleeAttackList[i]
+            i = i + 1
+            print(str(len(loogeyMeleeAttackList)))
+            if i >= len(loogeyMeleeAttackList):
+                i = 0
         
 class gameObjectStatic:
     def __init__(self, color, width, height, posX, posY):
@@ -101,11 +103,10 @@ while True: #Main game loop
         player.move(space=True)
     rectangle.draw()
     screen.blit(player.image, player.pos)
-
     player.attack()
     pygame.display.update()
     clock.tick(60)
     tick = tick + 1
     if tick >= 60:
         tick = 0
-    print(str(tick))
+    
