@@ -5,11 +5,11 @@ import os
 pygame.init()
 WIDTH = 1280
 HEIGHT = 720
-i = 0
 class playerObject: #Creates the player controllable object
     def __init__(self, image, height, speed):
         global loogeyMeleeAttackList
         global loogeyWalkingList
+        global loogeyJumpingList
         self.speed = speed
         self.image = image
         self.pos = image.get_rect().move(0, height)
@@ -33,14 +33,16 @@ class playerObject: #Creates the player controllable object
     def move(self, up = False, down = False, left = False, right = False, space = False):
         if right:
             self.pos.right += self.speed
+            player.walk()
         if left:
             self.pos.right -= self.speed
+            player.walk()
         if down:
             self.pos.top += self.speed
         if up:
             self.pos.top -= self.speed
         if space:
-            print("ATeCk!1!")
+            player.attack()
         #Do stuff
         if self.pos.right > WIDTH:
             self.pos.left = 0
@@ -52,13 +54,33 @@ class playerObject: #Creates the player controllable object
             self.pos.top = HEIGHT-SPRITE_HEIGHT
     def attack(self):
         global tick
-        global i
+        if frame is None:
+            frame = 0
+        if tick % 3 == 0 and frame >= len(loogeyMeleeAttackList):
+            self.image = loogeyMeleeAttackList[frame]
+            frame = frame + 1
+            if frame >= len(loogeyMeleeAttackList):
+                frame = 0
+                
+    def jump(self):
+        global tick 
+        global jump
+        
         if tick % 3 == 0:
-            self.image = loogeyMeleeAttackList[i]
-            i = i + 1
-            print(str(len(loogeyMeleeAttackList)))
-            if i >= len(loogeyMeleeAttackList):
-                i = 0
+            self.image = loogeyJumpingList[i1]
+            jump = jump + 1
+            if jump >= len(loogeyJumpingList):
+                jump = 0
+                
+    def walk(self):
+        global tick
+        global walk
+        if tick % 3 == 0:
+            self.image = loogeyWalkingList[i2]
+            walk = walk + 1
+            if walk >= len(loogeyWalkingList):
+                walk = 0
+    
         
 class gameObjectStatic:
     def __init__(self, color, width, height, posX, posY):
@@ -103,7 +125,8 @@ while True: #Main game loop
         player.move(space=True)
     rectangle.draw()
     screen.blit(player.image, player.pos)
-    player.attack()
+
+    
     pygame.display.update()
     clock.tick(60)
     tick = tick + 1
