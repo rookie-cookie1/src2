@@ -2,11 +2,13 @@ import sys
 import pygame
 from PIL import Image
 import os
+from natsort import natsorted, ns
 pygame.init()
 WIDTH = 1280
 HEIGHT = 720
 attack = False
-frameList = []
+frameList = [0, 0, 0]
+facing = False #This boolean dictates wich direction loogey is facing
 class playerObject: #Creates the player controllable object
     def __init__(self, image, height, speed):
         global loogeyMeleeAttackList
@@ -20,7 +22,7 @@ class playerObject: #Creates the player controllable object
         loogeyMeleeAttackList = []
         loogeyWalkingList = []
         loogeyJumpingList = []
-        #These three for loops load the animation frames into the lists
+        #These three FOR loops load the animation frames into the lists
         for frame in os.scandir('loogeyAnimations/loogeyMeleeAttack'):
             if frame.is_file():
                 frame = pygame.image.load(frame).convert_alpha()
@@ -33,16 +35,24 @@ class playerObject: #Creates the player controllable object
             if frame.is_file():
                 frame = pygame.image.load(frame).convert_alpha()
                 loogeyJumpingList.append(frame)
-        
+
+    #This move function activates functions via keypresses    
     def move(self, up = False, down = False, left = False, right = False, space = False):
         global attack
         global finished
+        global facing
         if right:
+            facing = True
             self.pos.right += self.speed
-            player.walk()
+            #Does the walk animation of loogey is not attacking
+            if attack == False:
+                player.walk()
         if left:
+            facing = False
             self.pos.right -= self.speed
-            player.walk()
+            #Does the walk animation if loogey is not attacking
+            if attack == False:
+                player.walk()
         if down:
             self.pos.top += self.speed
         if up:
@@ -65,22 +75,16 @@ class playerObject: #Creates the player controllable object
         global frameList
         if finished == True:
             frameList[0] = 0
-            frame = frameList[0]
-            print(str(finished))
             finished = False
-        if frame < len(loogeyMeleeAttackList):    
-            self.image = loogeyMeleeAttackList[frame]
-            frame = frame + 1
-            frameList[0] = frame
+        if frameList[0] < len(loogeyMeleeAttackList):
+            frame = frameList[0]    
             print(str(frame))
+            self.image = loogeyMeleeAttackList[frame]
+            frameList[0] = frameList[0] + 1
         else:
-            frame = 0
             frameList[0] = 0
             attack = False
             finished = True
-            
-        
-                
     def jump(self):
         global tick 
         global jump
@@ -92,15 +96,14 @@ class playerObject: #Creates the player controllable object
                 jump = 0
                 
     def walk(self):
-        i2 = 0
         global tick
-        global walk
-        walk = 0
-        if tick % 3 == 0:
-            self.image = loogeyWalkingList[i2]
-            walk = walk + 1
-            if walk >= len(loogeyWalkingList):
-                walk = 0
+        global frameList
+        frame = frameList[1]
+        if tick % 3 == 0 and frameList[1] < len(loogeyWalkingList):
+            self.image = loogeyWalkingList[frame]
+            frameList[1] = frameList[1] + 1
+            if frameList[1] >= len(loogeyWalkingList):
+                frameList[1] = 0
     
         
 class gameObjectStatic:
@@ -129,6 +132,7 @@ player = playerObject(playerImgPG, 0, 5) #Creates the player object
 rectangle = gameObjectStatic((3, 3, 3), WIDTH, 60, 0, 660)
 tick = 0
 while True: #Main game loop
+    #This if block slows the attack animation down to 20fps and activates 
     if attack == True and tick % 3 == 0:
         player.attack()  
     for event in pygame.event.get():
