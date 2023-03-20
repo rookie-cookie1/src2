@@ -184,23 +184,23 @@ class playerObject: #Creates the player controllable object
         global land
         global inAir
         global jump
-        if self.momentum < 0:
+        if self.momentum <= 0:
             print(str(self.momentum) + str(self.pos.bottom))
             newTop = self.pos.bottom
             newHeight = self.momentum * -1
             self.collideRect.update(self.pos.left, newTop, 1, newHeight)
         else:
             self.collideRect.update(self.pos.left, self.pos.bottom, 1, self.momentum)
+        print(str(self.collideRect.bottom))
         if inAir == True:
             self.momentum = self.momentum + gravity
             forwardPoint = self.pos.bottom + self.momentum
             halfSprite = self.pos.right - self.pos.left
             halfSprite = self.pos.left + halfSprite
             if floor.rect.colliderect(self.collideRect):
-                #TRY TO FIGURE OUT WHY THE COLLIDERECT IS NOT BEING OFSET TO BE CORRECTLY DRAW WHEN MOMENTUM IS NEGATIVE
+                #TRY TO FIGURE OUT WHY THE COLLIDERECT IS NOT BEING OFSET TO BE CORRECTLY COLLIDE WHEN MOMENTUM IS NEGATIVE
                 self.pos.bottom = floor.rect.top + 12
                 self.momentum = 0
-                self.collideRect.update(self.pos.left, self.pos.bottom - 12, 1, self.momentum)
                 inAir = False
                 jump = False
                 land = True
