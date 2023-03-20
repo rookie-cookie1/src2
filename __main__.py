@@ -26,7 +26,7 @@ class playerObject: #Creates the player controllable object
         self.pos = image.get_rect().move(0, height)
         self.momentum = 0
         self.collideRect = pygame.Rect(self.pos.left, self.pos.bottom, 1, self.momentum)
-        jumpPower = -16
+        jumpPower = -24
         loogeyMeleeAttackList = []
         loogeyWalkingList = []
         loogeyJumpingList = []
@@ -109,37 +109,32 @@ class playerObject: #Creates the player controllable object
             inAir = True
             self.image = loogeyJumpingList[0]
             self.momentum = jumpPower
-            
-                
         else:
             if self.momentum <= 0:
                 if finishedList[2] == True:
                     finishedList[2] = False
                     frameList[1] = 0
-                    print('SET')
                     momentumDivisor = 4
-                    print('COMPLIE '+str(finishedList[2]) )
                 frame = frameList[1]
-                print(str(self.momentum) + ' ' + str(jumpPower + momentumDivisor) + ' ' + str(momentumDivisor))
-                if self.momentum == jumpPower + momentumDivisor and attack == False:
+                if self.momentum == jumpPower + momentumDivisor and attack == False and frame < len(loogeyJumpingList):
                     if facing:
-                       
                         modified = pygame.transform.flip(loogeyJumpingList[frame], True, False)
                         self.image = modified
                     else:
                         self.image = loogeyJumpingList[frame]
-
                     frame = frame + 1
                     frameList[1] = frame
                     momentumDivisor = momentumDivisor + 4
-                    print(str(frame))
+                    
             else:
+                frame = 0
+                frameList[1] = frame
                 finishedList[2] = True
                 if facing:
                     modified = pygame.transform.flip(loogeyJumpingList[4], True, False)
                     self.image = modified
                 else:
-                    self.img = loogeyJumpingList[4]
+                    self.image = loogeyJumpingList[4]
                 
     def land(self):
         global frameList
@@ -184,21 +179,21 @@ class playerObject: #Creates the player controllable object
         global land
         global inAir
         global jump
-        if self.momentum <= 0:
-            print(str(self.momentum) + str(self.pos.bottom))
-            newTop = self.pos.bottom
+        if self.momentum < 0:
+            
+            newTop = self.pos.bottom +  self.momentum
             newHeight = self.momentum * -1
-            self.collideRect.update(self.pos.left, newTop, 1, newHeight)
+            self.collideRect.update(self.pos.left, newTop, 1, self.momentum)
         else:
+
             self.collideRect.update(self.pos.left, self.pos.bottom, 1, self.momentum)
-        print(str(self.collideRect.bottom))
+        
         if inAir == True:
             self.momentum = self.momentum + gravity
             forwardPoint = self.pos.bottom + self.momentum
             halfSprite = self.pos.right - self.pos.left
             halfSprite = self.pos.left + halfSprite
             if floor.rect.colliderect(self.collideRect):
-                #TRY TO FIGURE OUT WHY THE COLLIDERECT IS NOT BEING OFSET TO BE CORRECTLY COLLIDE WHEN MOMENTUM IS NEGATIVE
                 self.pos.bottom = floor.rect.top + 12
                 self.momentum = 0
                 inAir = False
@@ -247,6 +242,7 @@ while True: #Main game loop
         if event.type == pygame.QUIT:
             sys.exit()
     screen.blit(background, player.pos, player.pos)
+    pygame.draw.rect(screen, (0, 255, 0), player.collideRect)
     player.update()
     
     keys = pygame.key.get_pressed()
