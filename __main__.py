@@ -179,15 +179,13 @@ class playerObject: #Creates the player controllable object
         global land
         global inAir
         global jump
+        halfwidth = self.pos.width/2
         if self.momentum < 0:
-            
             newTop = self.pos.bottom +  self.momentum
             newHeight = self.momentum * -1
-            self.collideRect.update(self.pos.left, newTop, 1, self.momentum)
+            self.collideRect.update(self.pos.left + halfwidth, newTop, 1, self.momentum)
         else:
-
-            self.collideRect.update(self.pos.left, self.pos.bottom, 1, self.momentum)
-        
+            self.collideRect.update(self.pos.left + halfwidth, self.pos.bottom, 1, self.momentum)
         if inAir == True:
             self.momentum = self.momentum + gravity
             forwardPoint = self.pos.bottom + self.momentum
@@ -242,9 +240,8 @@ while True: #Main game loop
         if event.type == pygame.QUIT:
             sys.exit()
     screen.blit(background, player.pos, player.pos)
-    pygame.draw.rect(screen, (0, 255, 0), player.collideRect)
     player.update()
-    
+    screen.blit(player.image, player.pos)
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP]:
         player.move(up=True)
@@ -257,7 +254,7 @@ while True: #Main game loop
     if keys[pygame.K_SPACE]:
         player.move(space=True)
     floor.draw()
-    screen.blit(player.image, player.pos)
+    
     pygame.display.update()
     clock.tick(60)
     tick = tick + 1
